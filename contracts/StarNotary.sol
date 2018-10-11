@@ -73,4 +73,49 @@ contract StarNotary is ERC721 {
             msg.sender.transfer(msg.value - starCost);
         }
     }
+
+    function checkIfStarExists(string _ra, string _dec, string _mag) public view returns (bool) {
+        bool exists = false;
+        bytes memory coordinates = bytes(concatThreeStrings(_ra, _dec, _mag));
+        if(existingCoordinatesToToken[keccak256(coordinates)] != 0) exists = true;
+        return exists;
+    }
+
+    function concatTwoStrings(string _firstString, string _secondString) internal constant returns (string){
+        // we need to access individual bytes of first string
+        bytes memory firstStringAsByteArray = bytes(_firstString);
+
+        // we also need to access individual bytes of second string
+        bytes memory secondStringAsByteArray = bytes(_secondString);
+
+        // now we need to calculate the length of target string
+        uint256 targetStringLength = firstStringAsByteArray.length + secondStringAsByteArray.length;
+
+        // now we create the new empty string - this is our target string
+        string memory emptyStringOfTargetLength = new string(targetStringLength);
+
+        // we also need to access it's individual bytes
+        bytes memory targetStringByteArray = bytes(emptyStringOfTargetLength);
+
+        // now we need to copy each byte of first string to target string
+        uint targetByteIndex = 0; // index of the byte in target string
+
+        for (uint sourceByteIndex = 0; sourceByteIndex < firstStringAsByteArray.length; sourceByteIndex++) {
+            targetStringByteArray[targetByteIndex++] = firstStringAsByteArray[sourceByteIndex];
+        } // first string copied to target string
+        for (sourceByteIndex = 0; sourceByteIndex < secondStringAsByteArray.length; sourceByteIndex++) {
+            targetStringByteArray[targetByteIndex++] = secondStringAsByteArray[sourceByteIndex];
+        } // second string copied to target string
+        return string(targetStringByteArray);
+    }
+
+    function concatThreeStrings(string _firstString, string _secondString, string _thirdString) internal constant returns (string) {
+        return concatTwoStrings(concatTwoStrings(_firstString, _secondString), _thirdString);
+    }
+
+    function compareStrings (string a, string b) internal view returns (bool){
+        // we hash both strings using Etherium native hash function keccak256()
+        // and compare hashes
+        return keccak256(bytes(a)) == keccak256(bytes(b));
+    }
 }
