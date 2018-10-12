@@ -16,7 +16,7 @@ contract('Feature001: Star Coordinates and Story', async accounts => {
     let starTwo = new Star("awesome star number two", "I love this star two!", starTwoCoordinates);
 
     beforeEach(async function () {
-        this.contract = await StarNotary.new({from: defaultAccount});
+        this.contract = await StarNotary.new("Star Notary", "SNOT", {from: defaultAccount});
     });
     
     describe('Create a star', async function() {
