@@ -41,7 +41,13 @@ this.contract.createStar("star2", "story2", "132.155", "121.874", "245.978");
 
 ## How to test?
 1. Open Terminal in the Project directory.
-2. Run:
+2. Run Ganache
+```
+ganache-cli
+```
+> IMPORTANT! If you are using `ganache-cli`, make sure your `truffle.js`
+has `port: 8545`.
+3. Run:
 ```
 truffle test test/F001-StarCoordinatesAndStory.js
 ```
