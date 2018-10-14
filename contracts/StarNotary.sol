@@ -14,10 +14,20 @@ contract StarNotary is ERC721Mintable {
 
     mapping(uint256 => Star) _tokenIdToStarInfo;
     mapping(uint256 => bool) tokenIdsIssued;
-    mapping(uint256 => uint256) public starsForSale;
+    mapping(uint256 => uint256) _starsForSale;
     mapping(bytes32 => uint256) existingCoordinatesToToken;
 
     constructor(string name, string symbol) ERC721Full (name, symbol) public {}
+
+    modifier tokenIssued(uint256 _tokenId) {
+        require(tokenIdsIssued[_tokenId] == true, "ERROR: This token does not exists");
+        _;
+    }
+
+    modifier starIsForSale(uint256 _tokenId) {
+        require(_starsForSale[_tokenId] > 0, "ERROR: Star is not for sale");
+        _;
+    }
 
     function createStar(
         string _name,
@@ -47,24 +57,26 @@ contract StarNotary is ERC721Mintable {
     }
 
     function tokenIdToStarInfo(uint256 _tokenId) public view
+    tokenIssued(_tokenId)
     returns(string name, string story, string ra, string dec, string mag) {
-        require(tokenIdsIssued[_tokenId] == true, "ERROR: This token does not exists");
         Star memory s = _tokenIdToStarInfo[_tokenId];
         return (s.name, s.story, s.ra, s.dec, s.mag);
     }
 
-    function putStarUpForSale(uint256 _tokenId, uint256 _price) public { 
-        require(this.ownerOf(_tokenId) == msg.sender);
+    function putStarUpForSale(uint256 _tokenId, uint256 _price) public
+    tokenIssued(_tokenId){
+        require(this.ownerOf(_tokenId) == msg.sender, "ERROR: Only token owner can put star for sale");
 
-        starsForSale[_tokenId] = _price;
+        _starsForSale[_tokenId] = _price;
     }
 
-    function buyStar(uint256 _tokenId) public payable { 
-        require(starsForSale[_tokenId] > 0);
+    function buyStar(uint256 _tokenId) public payable
+    tokenIssued(_tokenId)
+    starIsForSale(_tokenId) {
         
-        uint256 starCost = starsForSale[_tokenId];
+        uint256 starCost = _starsForSale[_tokenId];
         address starOwner = this.ownerOf(_tokenId);
-        require(msg.value >= starCost);
+        require(msg.value >= starCost, "ERROR: Value offered is less, than Star price");
 
         _removeTokenFrom(starOwner, _tokenId);
         _addTokenTo(msg.sender, _tokenId);
@@ -74,6 +86,13 @@ contract StarNotary is ERC721Mintable {
         if(msg.value > starCost) { 
             msg.sender.transfer(msg.value - starCost);
         }
+    }
+
+    function starsForSale(uint256 _tokenId) public view
+    tokenIssued(_tokenId)
+    starIsForSale(_tokenId)
+    returns (uint256)  {
+        return _starsForSale[_tokenId];
     }
 
     function checkIfStarExists(string _ra, string _dec, string _mag) public view returns (bool) {
