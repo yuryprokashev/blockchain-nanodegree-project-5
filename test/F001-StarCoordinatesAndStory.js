@@ -18,85 +18,158 @@ contract('Feature001: Star Coordinates and Story', async accounts => {
     beforeEach(async function () {
         this.contract = await StarNotary.new("Star Notary", "SNOT", {from: defaultAccount});
     });
-    
-    describe('Create a star', async function() {
-        let newStar;
 
-        beforeEach(async function() {
-            await this.contract.createStar(
-                starOne.name,
-                starOne.story,
-                starOne.coordinates.rightAscend,
-                starOne.coordinates.declination,
-                starOne.coordinates.magnitude,
-                starTokenOne,
-                {from: seller});
-            newStar = await this.contract.tokenIdToStarInfo(starTokenOne);
-        });
+    describe("1. Transactions that mutate the contract state", async function() {
+        describe("1.1 Mint New Star Token Transaction.", async function () {
 
-        it('The true is returned, when the star one exists', async function () {
-            let exists = await this.contract.checkIfStarExists(
-                starOne.coordinates.rightAscend,
-                starOne.coordinates.declination,
-                starOne.coordinates.magnitude);
-            assert.equal(exists, true);
-        });
-        it('The false is returned, when the star two does not exist', async function () {
-            let exists = await this.contract.checkIfStarExists(
-                starTwo.coordinates.rightAscend,
-                starTwo.coordinates.declination,
-                starTwo.coordinates.magnitude);
-            assert.equal(exists, false);
-        });
-        it('The star name matches input', async function () {
-            assert.equal(newStar[0], starOne.name);
-        });
-        it('The star story matches input', async function () {
-            assert.equal(newStar[1], starOne.story);
-        });
-        it('The star right ascend matches "ra_" + input', async function () {
-            assert.equal(newStar[2], `ra_${starOne.coordinates.rightAscend}`);
-        });
-        it('The star declination matches "dec_" + input', async function () {
-            assert.equal(newStar[3], `dec_${starOne.coordinates.declination}`);
-        });
-        it('The star magnitude matches "mag_" + input', async function () {
-            assert.equal(newStar[4], `mag_${starOne.coordinates.magnitude}`);
-        });
-        it('Throws error on attempt to create a star with the same three coordinates', async function () {
-            try {
-                await this.contract.createStar(
-                    starOne.name,
-                    starOne.story,
-                    starOne.coordinates.rightAscend,
-                    starOne.coordinates.declination,
-                    starOne.coordinates.magnitude,
-                    starTokenTwo,
-                    {from: seller});
-            } catch (e) {
-                assert.equal(e.message.includes("ERROR: The star with these coordinates already exists"), true);
-            }
-        });
-        it('Create another star, when one coordinate is different', async function () {
-            await this.contract.createStar(
-                starTwo.name,
-                starTwo.story,
-                starTwo.coordinates.rightAscend,
-                starTwo.coordinates.declination,
-                starOne.coordinates.magnitude,
-                starTokenTwo,
-                {from: seller});
-            let anotherStar = await this.contract.tokenIdToStarInfo(starTokenTwo);
-            assert.equal(anotherStar[0], starTwo.name);
-        });
-        it('Throws error, when star with provided tokenId does not exist', async function(){
-            try {
-                await this.contract.tokenIdToStarInfo(starTokenThatDoesNotExist);
-            } catch (e) {
-                assert.equal(e.message.includes("ERROR: This token does not exists"), true);
-            }
+            describe("Access Control Errors", async function() {
+                it("inherited from ERC721Mintable.sol", async function () {
+
+                });
+            });
+
+            describe("Successful Case", async function () {
+
+                let mintTransaction;
+                before(async function () {
+                    mintTransaction = await this.contract.createStar(
+                        starOne.name,
+                        starOne.story,
+                        starOne.coordinates.rightAscend,
+                        starOne.coordinates.declination,
+                        starOne.coordinates.magnitude,
+                        starTokenOne,
+                        {from: seller});
+                });
+                it('Mint New Star TokenTransaction successful', async function () {
+                    assert.equal(mintTransaction.logs[0].event, "Transfer");
+                });
+            });
+
+            describe("Invalid Input Errors", async function () {
+                it('Throws an Error, when there is already the Star Token with the same coordinates', async function () {
+                    try {
+                        await this.contract.createStar(
+                            starOne.name,
+                            starOne.story,
+                            starOne.coordinates.rightAscend,
+                            starOne.coordinates.declination,
+                            starOne.coordinates.magnitude,
+                            starTokenTwo,
+                            {from: seller});
+                    } catch (e) {
+                        assert.equal(e.message.includes("ERROR: The star with these coordinates already exists"), true);
+                    }
+                });
+            });
         });
     });
+
+
+    describe("2. Transactions that read the contract state", async function() {
+        describe("2.1 Read Star By Token ID Transaction.", async function () {
+
+            describe("Access Control Errors", async function() {
+                it("Does not have access restrictions", async function () {
+
+                });
+            });
+
+            describe("Successful Case", async function () {
+                let mintedStarToken;
+                before(async function () {
+                    await this.contract.createStar(
+                        starOne.name,
+                        starOne.story,
+                        starOne.coordinates.rightAscend,
+                        starOne.coordinates.declination,
+                        starOne.coordinates.magnitude,
+                        starTokenOne,
+                        {from: seller});
+                    mintedStarToken = await this.contract.tokenIdToStarInfo(starTokenOne);
+                });
+                it('Read Star By Token ID Transaction successful', async function () {
+                    await this.contract.createStar(
+                        starOne.name,
+                        starOne.story,
+                        starOne.coordinates.rightAscend,
+                        starOne.coordinates.declination,
+                        starOne.coordinates.magnitude,
+                        starTokenOne,
+                        {from: seller});
+                    let star = await this.contract.tokenIdToStarInfo(starTokenOne);
+                    assert.equal(star !== undefined, true);
+                });
+
+                it('The star name matches input', async function () {
+                    assert.equal(mintedStarToken[0], starOne.name);
+                });
+                it('The star story matches input', async function () {
+                    assert.equal(mintedStarToken[1], starOne.story);
+                });
+                it('The star right ascend matches "ra_" + input', async function () {
+                    assert.equal(mintedStarToken[2], `ra_${starOne.coordinates.rightAscend}`);
+                });
+                it('The star declination matches "dec_" + input', async function () {
+                    assert.equal(mintedStarToken[3], `dec_${starOne.coordinates.declination}`);
+                });
+                it('The star magnitude matches "mag_" + input', async function () {
+                    assert.equal(mintedStarToken[4], `mag_${starOne.coordinates.magnitude}`);
+                });
+            });
+
+            describe("Invalid Input Errors", async function () {
+                it('Throws an Error, when the Star Token does not exist', async function(){
+                    try {
+                        await this.contract.tokenIdToStarInfo(starTokenThatDoesNotExist);
+                    } catch (e) {
+                        assert.equal(e.message.includes("ERROR: This token does not exists"), true);
+                    }
+                });
+            });
+        });
+
+        describe("2.2 Check If Star Token With Coordinates Exists Transaction.", async function () {
+
+            describe("Access Control Errors", async function() {
+                it("Does not have access restrictions", async function () {
+
+                });
+            });
+
+            describe("Successful Case", async function () {
+                it('Check If Star Token With Coordinates Exists returns false, when star does not exist', async function () {
+                    let exists = await this.contract.checkIfStarExists(
+                        starTwo.coordinates.rightAscend,
+                        starTwo.coordinates.declination,
+                        starTwo.coordinates.magnitude);
+                    assert.equal(exists, false);
+                });
+                it('Check If Star Token With Coordinates Exists returns true, when star exists', async function () {
+                    await this.contract.createStar(
+                        starOne.name,
+                        starOne.story,
+                        starOne.coordinates.rightAscend,
+                        starOne.coordinates.declination,
+                        starOne.coordinates.magnitude,
+                        starTokenOne,
+                        {from: seller});
+                    let exists = await this.contract.checkIfStarExists(
+                        starOne.coordinates.rightAscend,
+                        starOne.coordinates.declination,
+                        starOne.coordinates.magnitude);
+                    assert.equal(exists, true);
+                });
+            });
+
+            describe("Invalid Input Errors", async function () {
+                it("Does not validate input", async function () {
+
+                });
+            });
+        });
+    });
+
 });
 
         // it('can check if star with provided coordinates exists', async function (){
