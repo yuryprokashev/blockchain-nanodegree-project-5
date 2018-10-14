@@ -62,42 +62,42 @@ https://github.com/OpenZeppelin/openzeppelin-solidity/issues/629)
 2. [Another issue that gives the same error, but is related to unimplemented method of the interface](
 https://mandarvaze.bitbucket.io/posts/please-check-your-gas-amount-maybe-misleading/)
 
-# Caveat-2. Ganache UI gas limit can not be reset to default.
+## Caveat-002. Ganache UI gas limit can not be reset to default.
 
-## What happened?
+### What happened?
 In my case I changed the `GAS LIMIT` property to blank in my Ganache UI client:
 
 ![](https://www.dropbox.com/s/vwdrvvyohmztj9o/Screenshot%202018-10-12%2020.31.10.png?dl=1)
 
-## How Etherium tells you about it?
+### How Etherium tells you about it?
 I run my javascript tests using `truffle test` and I see:
 
 `Error: Exceeds block gas limit`
 
-## What really happened?
+### What really happened?
 Ganache UI client does not update `GAS LIMIT` property to default, after
 you had changed it to some number.
 
-## How to solve it?
-### Change the gas limit to big value.
+### How to solve it?
+#### Change the gas limit to big value.
 Like 20,000,000.
 
-### Try to re-install Ganache UI
+#### Try to re-install Ganache UI
 I did not try this option.
 
-# Caveat-3. When contract has constructor with arguments, JS code must pass them.
-## What happened?
+## Caveat-0033. When contract has constructor with arguments, JS code must pass them.
+### What happened?
 I changed my `StarNotary.sol` to inherit from the `ERC721Mintable`.
 
 I added the two arguments into the `constructor` (see Caveat-1):
 
 And then I tried to run my Javascript tests.
 
-## How Etherium tells you about it?
+### How Etherium tells you about it?
 
 `Error: StarNotary contract constructor expected 2 arguments, received 0`
 
-## What really happened?
+### What really happened?
 My tests were creating the contract like this:
 ```
 beforeEach(async function () {
@@ -114,15 +114,15 @@ beforeEach(async function () {
 });
 ```
 
-# Caveat-4. Concatenating strings in Etherium
-## What happened?
+## Caveat-0044. Concatenating strings in Etherium
+### What happened?
 I followed the Project 5 review rubric. It asks to return the following response
 on call to `tokeIdToStarInfo(tokenId)`:
 ```
 ["Star power 103!", "I love my wonderful star", "ra_032.155", "dec_121.874", "mag_245.978"]
 ```
 
-## How Etherium tells you about it?
+### How Etherium tells you about it?
 Etherium does not say anything as Error.
 
 The problem, though, is that Solidity does not support the concatenation
@@ -140,9 +140,42 @@ Why would you want to concatenate string in smart contract, instead of
 asking it to return the `struct tuple` as `array` and transform the
 response into the fine formatted JSON on the web-server?
 
-## What really happened?
+### What really happened?
 Udacity asked to do an exercise, that is not a best practice of
 Etherium developer. For whatever reason.
 
-## How to solve it?
+### How to solve it?
 __Do not concatenate strings in your smart contract production code!__
+
+## Caveat-005. Embedding structs into each other
+<!--TODO Change article format to the common-->
+Solidity does not support `struct` which is embedded into another `struct`.
+```
+struct Child {
+    string name;
+    uint8 age;
+}
+struct Parent {
+    string parentName;
+    Child child;
+}
+mapping(uint256 => Parent) public idToParentStruct;
+```
+When you try to call this via `Javascript` as
+
+```
+await contract.idToParentStruct(parentId);
+```
+Then you will get
+```
+Error: invalid solidity type!: tuple
+```
+__But this code works fine!__
+```
+struct Parent {
+    string parentName;
+    string childName;
+    uint8 childAge;
+}
+mapping(uint256 => Parent) public idToParentStruct;
+```
