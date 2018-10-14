@@ -46,3 +46,10 @@
     2. Invalid Input
         1. owner address must not be 0
         2. operator address must not be 0
+
+## How to test?
+1. [Setup your test environment](./Common-TestEnvSetup.md)
+2. Run in project directory
+```
+truffle test test/F002-ERC721Mintable.js
+```

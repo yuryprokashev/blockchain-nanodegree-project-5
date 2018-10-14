@@ -89,7 +89,7 @@ I did not try this option.
 ## What happened?
 I changed my `StarNotary.sol` to inherit from the `ERC721Mintable`.
 
-I added the two arguments into the `constructor` (see Caveat-1)*[]:
+I added the two arguments into the `constructor` (see Caveat-1):
 
 And then I tried to run my Javascript tests.
 
@@ -113,3 +113,36 @@ beforeEach(async function () {
     this.contract = await StarNotary.new("Star Notary", "SNOT", {from: defaultAccount});
 });
 ```
+
+# Caveat-4. Concatenating strings in Etherium
+## What happened?
+I followed the Project 5 review rubric. It asks to return the following response
+on call to `tokeIdToStarInfo(tokenId)`:
+```
+["Star power 103!", "I love my wonderful star", "ra_032.155", "dec_121.874", "mag_245.978"]
+```
+
+## How Etherium tells you about it?
+Etherium does not say anything as Error.
+
+The problem, though, is that Solidity does not support the concatenation
+of the `string` types out of the box!
+
+However, it does not support string concatenation for a good reason.
+
+__You shall not concatenate strings in the smart contract code!__
+
+Why? Because, you have your web-server for that!
+
+Operations on Etherium network are not free. They cost gas.
+
+Why would you want to concatenate string in smart contract, instead of
+asking it to return the `struct tuple` as `array` and transform the
+response into the fine formatted JSON on the web-server?
+
+## What really happened?
+Udacity asked to do an exercise, that is not a best practice of
+Etherium developer. For whatever reason.
+
+## How to solve it?
+__Do not concatenate strings in your smart contract production code!__
