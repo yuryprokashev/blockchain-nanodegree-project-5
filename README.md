@@ -1,4 +1,7 @@
 # Asset Notary Service on Etherium
+## Contract Deployed on Rinkeby Test Network
+1. `Contract address: 0x533C2dc83c9810e1F1debE92d47Eef09E17DA836`
+2. `TransactionId: 0x24af8bbf4933fc63e753108616c212e81f1a278d131dec6304a9936b3483eae6`
 # Dependencies
 1. `openzeppelin-solidity/ERC721Token.sol` - ERC721 interface implementation
 from `Zeppelin`
