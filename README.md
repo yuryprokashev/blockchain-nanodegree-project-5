@@ -1,6 +1,12 @@
 # Star Notary Service on Etherium Network
 ## Contract on Rinkeby Test Network
 1. Contract address at Rinkeby Network: `0x533C2dc83c9810e1F1debE92d47Eef09E17DA836`
+2. ID of contract creation transaction:
+```
+0x24af8bbf4933fc63e753108616c212e81f1a278d131dec6304a9936b3483eae6
+```
+3. [URL on Etherscan of contract creation transaction](
+https://rinkeby.etherscan.io/tx/0x24af8bbf4933fc63e753108616c212e81f1a278d131dec6304a9936b3483eae6)
 2. [Contract page on Etherscan](
 https://rinkeby.etherscan.io/address/0x533c2dc83c9810e1f1debe92d47eef09e17da836)
 3. [Token Tracker on Etherscan](
