@@ -179,3 +179,62 @@ struct Parent {
 }
 mapping(uint256 => Parent) public idToParentStruct;
 ```
+
+## Caveat-006. The sequence of require statements matter.
+<!--TODO Change article format to the common-->
+this order works properly
+```
+require(tokenIdsIssued[_tokenId] == true, "ERROR: This token does not exists");
+require(this.ownerOf(_tokenId) == msg.sender, "ERROR: Only token owner can put star for sale");
+```
+
+This order will throw standard Etherium `VM Exception while processing transaction: revert`
+but nothing more:
+```
+require(this.ownerOf(_tokenId) == msg.sender, "ERROR: Only token owner can put star for sale");
+require(tokenIdsIssued[_tokenId] == true, "ERROR: This token does not exists");
+```
+
+The reason is that `require(this.ownerOf(_tokenId) == msg.sender)`
+throws this error, because `_tokenId` does not exist. And the next
+`require(tokenIdsIssued[_tokenId] == true)` is never called.
+
+## Caveat-007. You will never get back error in live network.
+Try you JS code that says something like this
+```
+myContract.myTransactionMethod(arg1, arg2, function (err, txHash) {
+    if (err) return handleError(err);
+}
+```
+
+[some reading about it](
+https://programtheblockchain.com/posts/2017/12/13/building-decentralized-apps-with-ethereum-and-javascript/);
+
+## Caveat-008. The web3 object injected by Metamask does not need to be
+instantiated again.
+In the lesson videos Elena shows the instantiation code of the
+web3 object in case when it is injected by metamask. Project 5
+boilerplate code contains the same code.
+
+But it is not required.
+All, that is required, is to check, if Metamask, or any other browser
+plugin, injected the web3 object, or not. If not, application must
+show error and ask user to log in (= authenticate with metamask, or
+any other browser plugin wallet).
+
+## Caveat-009. Official web3 from Etherium is still callback based.
+But you can use the `truffle-contract` package to instantiate your
+contracts.
+There is a part about it called "2. Instantiation of the Contract" [here](
+https://boostlog.io/@junp1234/how-to-make-a-dapp-of-a-pet-shop-using-solidity-and-truffle-5ab200c50814730093a2ec91)
+
+__But please, do not do the other stuff, described in this article!__
+
+## Caveat-010. Once you restarted your dev network, you need to re-compile
+and re-deploy your contracts.
+
+It is because, when you compile the contract for new network, contract
+json `networks` property is updated with new network. Hence, your
+contract has a new ABI. => You need to make sure, you instantiate
+your contract by calling `TruffleContract(contractJson)` using the contract
+with latest json.

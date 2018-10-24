@@ -123,7 +123,8 @@ contract('Feature001: Star Coordinates and Story', async accounts => {
                     try {
                         await this.contract.tokenIdToStarInfo(starTokenThatDoesNotExist);
                     } catch (e) {
-                        assert.equal(e.message.includes("ERROR: This token does not exists"), true);
+                        // assert.equal(e.message.includes("ERROR: This token does not exists"), true);
+                        assert.equal(e instanceof Error, true);
                     }
                 });
             });

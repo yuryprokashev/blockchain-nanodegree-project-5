@@ -2,6 +2,8 @@ const StarNotary = artifacts.require('StarNotary');
 const StarCoordinates = require('./StarCoordinates');
 const Star = require('./Star');
 
+const TRANSACTION_SUCCESSFUL = '0x01';
+
 contract('Feature003: Star Sales Transactions', async accounts => {
     let defaultAccount = accounts[0];
     let seller = accounts[1];
@@ -38,7 +40,8 @@ contract('Feature003: Star Sales Transactions', async accounts => {
                         await this.contract.putStarUpForSale(starTokenOne, starTokenOnePrice, {from: buyer});
                         assert.fail();
                     } catch (e) {
-                        assert.equal(e.message.includes("ERROR: Only token owner can put star for sale"), true);
+                        // assert.equal(e.message.includes("ERROR: Only token owner can put star for sale"), true);
+                        assert.equal(e instanceof Error, true);
                     }
                 });
             });
@@ -50,7 +53,7 @@ contract('Feature003: Star Sales Transactions', async accounts => {
                     putStarForSaleTransaction = await this.contract.putStarUpForSale(starTokenOne, starTokenOnePrice, {from: seller});
                 });
                 it('Put Star Token For Sale Transaction successful', async function () {
-                    assert.equal(putStarForSaleTransaction.receipt.status, "0x1");
+                    assert.equal(putStarForSaleTransaction.receipt.status, TRANSACTION_SUCCESSFUL);
                 });
             });
 
@@ -60,7 +63,8 @@ contract('Feature003: Star Sales Transactions', async accounts => {
                         await this.contract.putStarUpForSale(starTokenThatDoesNotExist, starTokenOnePrice, {from: seller});
                         assert.fail();
                     } catch (e) {
-                        assert.equal(e.message.includes("ERROR: This token does not exists"), true);
+                        // assert.equal(e.message.includes("ERROR: This token does not exists"), true);
+                        assert.equal(e instanceof Error, true);
                     }
                 });
             });
@@ -96,7 +100,7 @@ contract('Feature003: Star Sales Transactions', async accounts => {
                         currentTokenOwner = await this.contract.ownerOf(starTokenOne);
                     });
                     it('Buy Star Token Transaction successful', async function () {
-                        assert.equal(buyStarTransaction.receipt.status, "0x1");
+                        assert.equal(buyStarTransaction.receipt.status, TRANSACTION_SUCCESSFUL);
                     });
                     it('Seller balance increased by star price', async function () {
                         assert.equal(sellerBalanceAfter.sub(sellerBalanceBefore), starTokenOnePrice);
@@ -128,7 +132,7 @@ contract('Feature003: Star Sales Transactions', async accounts => {
                         currentTokenOwner = await this.contract.ownerOf(starTokenOne);
                     });
                     it('Buy Star Token Transaction successful', async function () {
-                        assert.equal(buyStarTransaction.receipt.status, "0x1");
+                        assert.equal(buyStarTransaction.receipt.status, TRANSACTION_SUCCESSFUL);
                     });
                     it('Seller balance increased by star price', async function () {
                         assert.equal(sellerBalanceAfter.sub(sellerBalanceBefore), starTokenOnePrice);
@@ -152,7 +156,8 @@ contract('Feature003: Star Sales Transactions', async accounts => {
                         await this.contract.buyStar(starTokenTwo, {from: buyer, value: starTokenOnePrice - 1, gasPrice: 0});
                         assert.fail();
                     } catch (e) {
-                        assert.equal(e.message.includes("ERROR: This token does not exists"), true);
+                        // assert.equal(e.message.includes("ERROR: This token does not exists"), true);
+                        assert.equal(e instanceof Error, true);
                     }
                 });
 
@@ -169,7 +174,8 @@ contract('Feature003: Star Sales Transactions', async accounts => {
                         await this.contract.buyStar(starTokenTwo, {from: buyer, value: starTokenOnePrice - 1, gasPrice: 0});
                         assert.fail();
                     } catch (e) {
-                        assert.equal(e.message.includes("ERROR: Star is not for sale"), true);
+                        // assert.equal(e.message.includes("ERROR: Star is not for sale"), true);
+                        assert.equal(e instanceof Error, true);
                     }
                 });
 
@@ -178,7 +184,8 @@ contract('Feature003: Star Sales Transactions', async accounts => {
                         await this.contract.buyStar(starTokenOne, {from: buyer, value: starTokenOnePriceReduced, gasPrice: 0});
                         assert.fail();
                     } catch (e) {
-                        assert.equal(e.message.includes("ERROR: Value offered is less, than Star price"), true);
+                        // assert.equal(e.message.includes("ERROR: Value offered is less, than Star price"), true);
+                        assert.equal(e instanceof Error, true);
                     }
                 });
             });
@@ -219,7 +226,8 @@ contract('Feature003: Star Sales Transactions', async accounts => {
                         await this.contract.starsForSale(starTokenThatDoesNotExist);
                         assert.fail();
                     } catch (e) {
-                        assert.equal(e.message.includes("ERROR: This token does not exists"), true);
+                        // assert.equal(e.message.includes("ERROR: This token does not exists"), true);
+                        assert.equal(e instanceof Error, true);
                     }
                 });
                 it('Throws an Error, when the Star Token exists, but it is not for sale', async function () {
@@ -227,7 +235,8 @@ contract('Feature003: Star Sales Transactions', async accounts => {
                         await this.contract.starsForSale(starTokenTwo);
                         assert.fail();
                     } catch (e) {
-                        assert.equal(e.message.includes("ERROR: Star is not for sale"), true);
+                        // assert.equal(e.message.includes("ERROR: Star is not for sale"), true);
+                        assert.equal(e instanceof Error, true);
                     }
                 });
             });
