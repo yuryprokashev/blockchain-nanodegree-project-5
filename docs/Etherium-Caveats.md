@@ -238,3 +238,13 @@ json `networks` property is updated with new network. Hence, your
 contract has a new ABI. => You need to make sure, you instantiate
 your contract by calling `TruffleContract(contractJson)` using the contract
 with latest json.
+
+### Caveat-10. To inject the metamask into you web page, you must run local http server and serve index.html from there
+What? Seriously?
+
+Damn, that's one of the most stupid things I have ever seen. :(
+why injecting the web3 into the web page directly and then ask to
+run local web server to serve it. One can just run the remote web server
+and server the page from there. I do not get it. Really.
+[This is the source article](
+https://ethereum.stackexchange.com/questions/16130/metamask-injected-web3-not-working-in-html-file)

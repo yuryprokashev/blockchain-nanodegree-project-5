@@ -9,14 +9,30 @@ https://rinkeby.etherscan.io/token/0x533c2dc83c9810e1f1debe92d47eef09e17da836?a=
 
 ## How to interact with the Contract deployed at Rinkeby?
 1. Clone this repo.
-2. Open `index.html` in the Google Chrome that has Metamask extension installed.
+2. Open this project directory and start terminal.
+3. Run
+```
+npm install
+```
+3. Start local http server
+```
+node index.js
+```
+3. In your Chrome Browser with Metamask extension installed open:
+```
+http://localhost:8080/index.html
+```
 3. Check section "What the User can do?" of this README (below).
 
 ## How to interact with the Contract deployed on your local test network?
 1. Clone this repo
 2. [Set up the Test Environment](./docs/Common-TestEnvSetup.md)
-3. Open project folder in the Terminal
-4. Follow below steps if you are using `ganache-cli`
+3. Open this project directory and start terminal.
+4. Run
+```
+npm install
+```
+5. Follow below steps if you are using `ganache-cli`
 ```
 // Compile contracts
 truffle compile --network development_cli
@@ -24,12 +40,17 @@ truffle compile --network development_cli
 // Deploy contracts
 truffle deploy --network development_cli
 ```
-5. The output of the `deploy` command will give you back contract address
+6. Follow below steps if you are using `ganache-ui`
 ```
-example here
+// Compile contracts
+truffle compile --network development_ui
+
+// Deploy contracts
+truffle deploy --network development_ui
 ```
-6. Copy this contract address and open index.html in text editor.
-7. Locate this code block in the `index.html`
+7. The output of the `deploy` command will give you back contract address
+8. Copy this contract address and open index.html in text editor.
+9. Locate this code block in the `index.html`
 ```
 // Star Notary @ Rinkeby
 const STAR_NOTARY_ADDRESS = "0x533c2dc83c9810e1f1debe92d47eef09e17da836";
@@ -37,12 +58,19 @@ const STAR_NOTARY_ADDRESS = "0x533c2dc83c9810e1f1debe92d47eef09e17da836";
 // Star Notary @ Local Development Network
 // const STAR_NOTARY_ADDRESS = "0x56bd8eba040abe225d4eece9aaf33bfe40bc391f";
 ```
-8. Replace the contract address in the last line with your contract
+10. Replace the contract address in the last line with your contract
 address.
-9. Uncomment the last line.
-10. Comment the second line, which declares address at Rinkeby test network.
-11. Open `index.html` in the Google Chrome that has Metamask extension installed.
-12. Check section "What the User can do?" of this README.
+11. Uncomment the last line.
+12. Comment the second line, which declares address at Rinkeby test network.
+13. Start local http server
+```
+node index.js
+```
+14. In your Chrome Browser with Metamask extension installed open:
+```
+http://localhost:8080/index.html
+```
+15. Check section "What the User can do?" of this README (below).
 
 ## What the User can do?
 1. The user first need to login to the network using his Metamask extension for Chrome.
