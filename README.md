@@ -93,7 +93,7 @@ submit the transaction with Metamask Chrome extension UI.
 The request to the Network is asynchronous. So User will have to wait
 until transaction is accepted by the Nework.
 ```
-4. User can see the status of the Transaction near the `Claim this Star` button.
+4. The user can see the status of the Transaction near the `Claim this Star` button.
 ```
 Caveat: sometimes Rinkeby does not reply for a long time.
 The page code waits for 240 seconds, and after considers the transaction
@@ -119,6 +119,7 @@ magnitude = 1 can be claimed.
     2. Transaction was rejected, the star with submitted coordinates already exists.
     3. Transaction processing will take longer than 240 seconds (when 240 seconds passed).
 7. Notifications are dissmissed within 10 seconds.
+8. The user can search the star by token Id.
 
 ## Dependencies
 1. Star Notary extends [ERC721Mintable.sol](

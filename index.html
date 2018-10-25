@@ -17,20 +17,66 @@
                 <h1>Star Notary Service</h1>
             </div>
             <div class="col-12">
-                <h2>Claim a new Star</h2>
-                <p>Stars claimed:
-                    <span id="starsClaimed"></span>
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <div class="nav-link active" id="createStarFormButton">Claim the new Star</div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="nav-link" id="searchBlockButton">Search Claimed Stars</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class=""row>
+            <div class="col-12">
+                <p>
+                    Stars claimed: <span id="starsClaimed"></span>
                 </p>
                 <p>
-                    Your Address:
-                    <span id="userAddress"></span>
+                    You have logged in with Address: <span id="userAddress"></span>
                 </p>
-            </div>
-            <div class="col-12">
-                <div  role="alert" id="notification"></div>
             </div>
 
             <div class="col-12">
+                <div  role="alert" id="notification"></div>
+            </div>
+            <div class="col-12" id="searchBlock" hidden>
+                <h3>Search Claimed Stars</h3>
+                <form id="searchStarForm" onsubmit="searchStar(event)">
+                    <div class="form-row align-items-center">
+                        <div class="form-group col-10">
+                            <label class="sr-only" for="starTokenId">TokenId</label>
+                            <input type="text" class="form-control" id="starTokenId" aria-describedby="tokenIdHelp" placeholder="Star Token Id">
+                        </div>
+                        <div class="form-group col-auto">
+                            <input id="searchStarButton" type="submit" class="btn btn-success" value="Search"></input>
+                        </div>
+                    </div>
+                </form>
+                <div class="col-12">
+                    <h5>Search Results:</h5>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-2">Name</div>
+                        <div class="col-4">Story</div>
+                        <div class="col-2">Right Ascend</div>
+                        <div class="col-2">Declination</div>
+                        <div class="col-2">Magnitude</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2" id="name"></div>
+                        <div class="col-4" id="story"></div>
+                        <div class="col-2" id="ra"></div>
+                        <div class="col-2" id="dec"></div>
+                        <div class="col-2" id="mag"></div>
+                    </div>
+                    <div class="row" id="noResults"></div>
+                </div>
+            </div>
+
+            <div class="col-12" id="formBlock">
+                <h3>Claim a new Star</h3>
                 <form id="createStarForm" onsubmit="createStar(event)">
                     <div class="form-group">
                         <label for="starName">Name</label>
@@ -42,30 +88,32 @@
                         <input type="text" class="form-control" id="starStory" aria-describedby="storyHelp" placeholder="Star story">
                         <small id="storyHelp" class="form-text text-muted">Share your story about this star!</small>
                     </div>
-                    <div class="form-group">
-                        <label for="starRightAscend">Right Ascend</label>
-                        <input type="text" class="form-control" id="starRightAscend" aria-describedby="starRightAscendHelp" placeholder="Star right ascend">
-                        <small id="starRightAscendHelp" class="form-text text-muted">Example: 032.155.</small>
+                    <div class="form-row align-items-center">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="starRightAscend">Right Ascend</label>
+                                <input type="text" class="form-control" id="starRightAscend" aria-describedby="starRightAscendHelp" placeholder="Star right ascend">
+                                <small id="starRightAscendHelp" class="form-text text-muted">Example: 032.155.</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="starDeclination">Declination</label>
+                                <input type="text" class="form-control" id="starDeclination" aria-describedby="starDeclinationHelp" placeholder="Star declination">
+                                <small id="starDeclinationHelp" class="form-text text-muted">Example: 121.874.</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="starMagnitude">Declination</label>
+                                <input type="text" class="form-control" id="starMagnitude" aria-describedby="starMagnitudeHelp" placeholder="Star magnitude">
+                                <small id="starMagnitudeHelp" class="form-text text-muted">Example: 245.978.</small>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="starDeclination">Declination</label>
-                        <input type="text" class="form-control" id="starDeclination" aria-describedby="starDeclinationHelp" placeholder="Star declination">
-                        <small id="starDeclinationHelp" class="form-text text-muted">Example: 121.874.</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="starMagnitude">Declination</label>
-                        <input type="text" class="form-control" id="starMagnitude" aria-describedby="starMagnitudeHelp" placeholder="Star magnitude">
-                        <small id="starMagnitudeHelp" class="form-text text-muted">Example: 245.978.</small>
-                    </div>
-                    <input id="createStarButton" type="submit" class="btn btn-primary" value="Claim this Star!"></input>
+                    <input id="createStarButton" type="submit" class="btn btn-success" value="Claim this Star!"></input>
                     <div id="transactionStatus"></div>
                 </form>
-            </div>
-
-            <div class="col-12">
-                <ul id="claimedStars" class="list-group">
-                    <li id="templateStarItem" class="list-group-item" hidden>Template Star</li>
-                </ul>
             </div>
         </div>
     </div>
@@ -85,6 +133,28 @@
                     return await starNotaryTruffle.totalSupply();
                 } catch(e) {
                     showError(`Can not get current token supply\n${err}`);
+                }
+            };
+
+            let grabElement = function(id) {
+                return document.getElementById(id);
+            };
+
+            let menuSwitch = function(event){
+                let searchBtn = grabElement("searchBlockButton");
+                let formBtn = grabElement("createStarFormButton");
+                let formBlock = grabElement("formBlock");
+                let searchBlock = grabElement("searchBlock");
+                if(event.target === searchBtn) {
+                    formBlock.hidden = true;
+                    formBtn.setAttribute("class", "nav-link");
+                    searchBlock.hidden = false;
+                    searchBtn.setAttribute("class", "nav-link active");
+                } else {
+                    searchBlock.hidden = true;
+                    searchBtn.setAttribute("class", "nav-link");
+                    formBlock.hidden = false;
+                    formBtn.setAttribute("class", "nav-link active");
                 }
             };
 
@@ -119,6 +189,31 @@
                     showTransactionStatus(e, undefined);
                     showError(e);
                     dismissNotification(10);
+                }
+            };
+
+            let searchStar = async function(event) {
+                cleanSearchResults();
+                event.preventDefault();
+                let tokenId = Number.parseInt(grabElement("starTokenId").value);
+                try {
+                    let starData = await starNotaryTruffle.tokenIdToStarInfo(tokenId);
+                    let star = parseStar(starData);
+                    showStar(star);
+                } catch (e) {
+                    // showError(e);
+                    showNoResults();
+                }
+                event.target.reset();
+            };
+
+            let parseStar = function(starData) {
+                return {
+                    name: starData[0],
+                    story: starData[1],
+                    ra: starData[2].slice(3),
+                    dec: starData[3].slice(4),
+                    mag: starData[4].slice(4)
                 }
             };
 
@@ -238,6 +333,25 @@
                 }, secondsAfter * 1000);
             };
 
+            let showStar = function(star){
+                let starProps = Object.keys(star);
+                starProps.forEach(prop => {
+                    grabElement(prop).innerText = star[prop];
+                });
+            };
+
+            let showNoResults = function() {
+                let element = grabElement("noResults");
+                element.innerText = "Nothing has been found. Try another token id."
+            };
+
+            let cleanSearchResults = function() {
+                let elementIdsToClean = ["name", "story", "ra", "dec", "mag", "noResults"];
+                elementIdsToClean.forEach(id => {
+                    grabElement(id).innerText = "";
+                });
+            };
+
             console.log(window.web3.currentProvider);
             web3.version.getNetwork(function(err,res){console.log(res)});
 
@@ -253,6 +367,8 @@
                 }
 
                 if(userLoggedIn === true) {
+                    grabElement("searchBlockButton").addEventListener("click", menuSwitch.bind(menuSwitch));
+                    grabElement("createStarFormButton").addEventListener("click", menuSwitch.bind(menuSwitch));
                     showAddress();
                     let StarNotaryTruffle = TruffleContract({
                         "contractName": "StarNotary",
